@@ -28,5 +28,15 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+jar {
+    manifest {
+        attributes "Main-Class": "com.codingmaniacs.interviews.cli.search.App"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 // Define the main class for the application
 mainClassName = 'com.codingmaniacs.interviews.cli.search.App'
