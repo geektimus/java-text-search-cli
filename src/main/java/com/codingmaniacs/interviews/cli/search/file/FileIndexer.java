@@ -1,16 +1,14 @@
 package com.codingmaniacs.interviews.cli.search.file;
 
 import com.codingmaniacs.interviews.cli.search.file.entities.IndexedWord;
+import com.google.common.collect.ImmutableMap;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +16,8 @@ public class FileIndexer {
 
     private static final String CHARS_TO_BE_IGNORED = "[.,?!]";
     private static final String WORD_SEPARATOR = " ";
+
+    private static final Map<String, Integer> wordCountPerFile = new HashMap<>(10);
 
     private FileIndexer() {
 
@@ -34,11 +34,13 @@ public class FileIndexer {
         final String filePathString = filePath.toFile().getPath();
 
         try (Stream<String> stream = Files.lines(filePath, charset)) {
-            return stream
+            Map<String, String> wordsIndexed = stream
                     .flatMap(FileIndexer::sanitizeAndTokenizeWords)
                     .distinct()
                     .map(w -> new IndexedWord(w, filePathString))
                     .collect(Collectors.toMap(IndexedWord::getWord, IndexedWord::getFileName));
+            wordCountPerFile.put(fileName, wordsIndexed.size());
+            return wordsIndexed;
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -64,5 +66,9 @@ public class FileIndexer {
                         Map.Entry::getKey,
                         Collectors.mapping(Map.Entry::getValue, Collectors.toList())
                 ));
+    }
+
+    public static Map<String, Integer> getWordCountPerFile() {
+        return wordCountPerFile;
     }
 }
