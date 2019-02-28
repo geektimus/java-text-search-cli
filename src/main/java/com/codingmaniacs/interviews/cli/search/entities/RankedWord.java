@@ -1,6 +1,8 @@
 package com.codingmaniacs.interviews.cli.search.entities;
 
-public class RankedWord {
+import java.util.Objects;
+
+public class RankedWord implements Comparable<RankedWord> {
     private final String word;
     private final String fileName;
     private final int rank;
@@ -38,5 +40,27 @@ public class RankedWord {
                 ", rank=" + rank +
                 ", count=" + count +
                 '}';
+    }
+
+
+    @Override
+    public int compareTo(RankedWord o) {
+        return Integer.compare(o.getRank(), getRank());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RankedWord that = (RankedWord) o;
+        return getRank() == that.getRank() &&
+                getCount() == that.getCount() &&
+                getWord().equals(that.getWord()) &&
+                getFileName().equals(that.getFileName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getWord(), getFileName(), getRank(), getCount());
     }
 }

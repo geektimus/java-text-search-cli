@@ -29,6 +29,11 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+
+    // https://mvnrepository.com/artifact/org.hamcrest/hamcrest-junit
+    testImplementation 'org.hamcrest:hamcrest-junit:2.0.0.0'
+
+
 }
 
 jar {

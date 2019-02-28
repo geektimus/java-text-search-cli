@@ -7,8 +7,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class WordRankerTest {
 
@@ -51,7 +54,7 @@ public class WordRankerTest {
         WordRanker wordRanker = WordRanker.getInstance();
         wordRanker.initialize(indexedWords);
 
-        Map<String, Integer> rank = wordRanker.getRankForWords(Collections.singletonList("word10"));
+        List<RankedWord> rank = wordRanker.getRankForWords(Collections.singletonList("word10"));
 
         assertEquals("The rank for a word not present in a file is 0 for that specific file", 0, rank.size());
     }
@@ -63,12 +66,11 @@ public class WordRankerTest {
 
         String filePath = "fake-file-04.txt";
 
-        Map<String, Integer> rankPerFile = wordRanker.getRankForWords(Collections.singletonList("word5"));
+        List<RankedWord> rankPerFile = wordRanker.getRankForWords(Collections.singletonList("word5"));
 
-        assertEquals("The word should be present in only one file", 1, rankPerFile.size());
+        assertThat(rankPerFile, hasSize(1));
 
-        assertTrue("The file path should be the path of the file with the hit", rankPerFile.containsKey(filePath));
-        assertEquals("The rank for a word present in a file is 100 for that specific file", 100, rankPerFile.get(filePath).intValue());
+        assertThat(rankPerFile, hasItem(new RankedWord("word5", filePath, 100, 1)));
     }
 
     @Test
@@ -78,32 +80,49 @@ public class WordRankerTest {
 
         String word = "word1";
 
-        Map<String, Integer> rankPerFile = wordRanker.getRankForWords(Collections.singletonList(word));
+        List<RankedWord> rankPerFile = wordRanker.getRankForWords(Collections.singletonList(word));
 
-        assertEquals("The word should be present in four files", 4, rankPerFile.size());
+        assertThat(rankPerFile, hasSize(4));
 
-        String filePath = "fake-file-01.txt";
-        assertTrue("The file path should be the path of the file with the hit", rankPerFile.containsKey(filePath));
-        assertEquals("The rank for a word present in a file is 100 for that specific file", 100, rankPerFile.get(filePath).intValue());
+        String filePath = "fake-file-02.txt";
+        assertThat(rankPerFile, hasItem(new RankedWord("word1", filePath, 100, 1)));
 
         filePath = "fake-file-04.txt";
-        assertTrue("The file path should be the path of the file with the hit", rankPerFile.containsKey(filePath));
-        assertEquals("The rank for a word present in a file is 100 for that specific file", 100, rankPerFile.get(filePath).intValue());
+        assertThat(rankPerFile, hasItem(new RankedWord("word1", filePath, 100, 1)));
     }
 
     @Test
-    public void testRankIndexedMultipleWordsOneHitInSeveralFiles() {
+    public void testRankIndexedMultipleWordsOneHitInOneFile() {
         WordRanker wordRanker = WordRanker.getInstance();
         wordRanker.initialize(indexedWords);
 
         List<String> words = Arrays.asList("word10", "word5", "word20");
 
-        Map<String, Integer> rankPerFile = wordRanker.getRankForWords(words);
+        List<RankedWord> rankPerFile = wordRanker.getRankForWords(words);
 
-        assertEquals("The word should be present in one file", 1, rankPerFile.size());
+        assertThat(rankPerFile, hasSize(1));
 
         String filePath = "fake-file-04.txt";
-        assertTrue("The file path should be the path of the file with the hit", rankPerFile.containsKey(filePath));
-        assertEquals("The rank for a word present in a file is 100 for that specific file", 33, rankPerFile.get(filePath).intValue());;
+        assertThat(rankPerFile, hasItem(new RankedWord("word5", filePath, 33, 1)));
+    }
+
+    @Test
+    public void testRankIndexedMultipleWordsSeveralHitsInSeveralFiles() {
+        WordRanker wordRanker = WordRanker.getInstance();
+        wordRanker.initialize(indexedWords);
+
+        RankedWord[] expectedRanking = {
+                new RankedWord("word2", "fake-file-04.txt", 100, 1),
+                new RankedWord("word2", "fake-file-02.txt", 66, 1),
+                new RankedWord("word4", "fake-file-01.txt", 66, 1),
+                new RankedWord("word1", "fake-file-03.txt", 33, 1)
+        };
+
+        List<String> words = Arrays.asList("word2", "word4", "word1");
+
+        List<RankedWord> rankPerFile = wordRanker.getRankForWords(words);
+
+        assertThat(rankPerFile, hasSize(4));
+        assertThat(rankPerFile, hasItems(expectedRanking));
     }
 }

@@ -2,8 +2,8 @@ package com.codingmaniacs.interviews.cli.search;
 
 import com.codingmaniacs.interviews.cli.search.entities.RankedWord;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,7 +39,7 @@ public class WordRanker {
                 .get(word);
     }
 
-    public Map<String, Integer> getRankForWords(List<String> words) {
+    public List<RankedWord> getRankForWords(List<String> words) {
 
         Map<String, List<RankedWord>> collect = words
                 .stream()
@@ -47,11 +47,18 @@ public class WordRanker {
                 .collect(Collectors.groupingBy(RankedWord::getFileName));
 
         // TODO: Find how to collect doing this operation, using groupingBy and mapping
-        Map<String, Integer> ranksPerFile = new HashMap<>(collect.size());
+        List<RankedWord> ranksPerFile = new ArrayList<>(collect.size());
         for (Map.Entry<String, List<RankedWord>> entry : collect.entrySet()) {
-            ranksPerFile.put(entry.getKey(), entry.getValue().size() * 100 / words.size() );
+            RankedWord rw = entry.getValue().get(0);
+            ranksPerFile.add(
+                    new RankedWord(
+                            rw.getWord(),
+                            rw.getFileName(),
+                            entry.getValue().size() * 100 / words.size(),
+                            1)
+            );
         }
 
-        return ranksPerFile;
+        return ranksPerFile.stream().sorted().collect(Collectors.toList());
     }
 }

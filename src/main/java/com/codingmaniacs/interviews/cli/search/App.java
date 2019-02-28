@@ -1,12 +1,15 @@
 package com.codingmaniacs.interviews.cli.search;
 
+import com.codingmaniacs.interviews.cli.search.entities.RankedWord;
 import com.codingmaniacs.interviews.cli.search.file.FileFilterer;
 import com.codingmaniacs.interviews.cli.search.file.FileIndexer;
+import com.codingmaniacs.interviews.cli.search.text.StringUtils;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class App {
 
@@ -43,15 +46,29 @@ public class App {
 
         System.out.println("Loaded " + indexedContent.size() + " words");
 
+        WordRanker wordRanker = WordRanker.getInstance();
+        wordRanker.initialize(indexedContent);
+
         Scanner keyboard = new Scanner(System.in);
 
         while (shouldBeRunning) {
             System.out.print("search> ");
             final String line = keyboard.nextLine();
-            // TODO: Search indexed files for words in line
 
             if(!line.trim().isEmpty() && (line.equals(":quit") || line.equals(":exit"))) {
                 shouldBeRunning = false;
+                break;
+            }
+
+            List<String> searchStrings = StringUtils
+                    .sanitizeAndTokenizeWords(line)
+                    .collect(Collectors.toList());
+
+            List<RankedWord> rankForWords = wordRanker.getRankForWords(searchStrings);
+            if (rankForWords.isEmpty()) {
+                System.out.println("Info: No matches found for: " + line);
+            } else {
+                rankForWords.forEach(v -> System.out.println(String.format("{file: %s, rank: %d}", v.getFileName(), v.getRank())));
             }
         }
     }

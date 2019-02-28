@@ -21,7 +21,7 @@ public class FileFiltererTest {
         FileFilterer loader = new FileFilterer(directory);
         List<String> textFileNames = loader.getTextFileNames();
 
-        assertEquals("The loader must load only text files", 3, textFileNames.size());
+        assertEquals("The loader must load only text files", 4, textFileNames.size());
     }
 
     @Test
