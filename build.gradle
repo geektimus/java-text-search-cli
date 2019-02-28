@@ -10,6 +10,9 @@ plugins {
     // Apply the java plugin to add support for Java
     id 'java'
 
+    // Apply the idea plugin to add support for Intellij IDE
+    id 'idea'
+
     // Apply the application plugin to add support for building an application
     id 'application'
 }
@@ -36,6 +39,10 @@ jar {
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
+}
+
+run {
+    standardInput = System.in
 }
 
 // Define the main class for the application
