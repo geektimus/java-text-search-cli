@@ -8,29 +8,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-// FIXME: Maybe call this wordindex???
-public class WordRanker {
+public class WordIndex {
 
-    private static WordRanker instance;
+    private static WordIndex instance;
 
     private static Map<String, List<String>> indexedWords;
 
-    private WordRanker() {
+    private WordIndex() {
     }
 
-    public static WordRanker getInstance() {
+    public static WordIndex getInstance() {
         if (instance == null) {
-            instance = new WordRanker();
+            instance = new WordIndex();
         }
         return instance;
     }
 
+    /**
+     * Initializes the WordIndex with a map that contains the mapping from words to file name.
+     *
+     * @param newIndex Map that contains the mapping from words to file name.
+     */
     public void initialize(Map<String, List<String>> newIndex) {
         if (indexedWords == null || indexedWords.isEmpty()) {
             indexedWords = newIndex;
         }
     }
 
+    /**
+     * Find the files that contain a given word.
+     *
+     * @param word Word to be searched in the index.
+     * @return List of file names.
+     */
     private List<String> getFilesThatMatchWord(String word) {
         if (!indexedWords.containsKey(word))
             return Collections.emptyList();
@@ -39,6 +49,20 @@ public class WordRanker {
                 .get(word);
     }
 
+    /**
+     * Calculates the rank of each word per file name.
+     * The rank is calculated as number of hits on a file * 100 / number of words to be searched
+     * <p>
+     * i.e:
+     * "search "aaa", "bbb", "ccc"
+     * "aaa" appears in file a and file b
+     * the rank is 1 * 100 / 3 = 33% for file a and file b
+     * </p>
+     *
+     * @param words Words that the user wants to match against the index
+     * @return a List of RankedWords sorted by Rank
+     * @see RankedWord
+     */
     public List<RankedWord> getRankForWords(List<String> words) {
 
         Map<String, List<RankedWord>> collect = words

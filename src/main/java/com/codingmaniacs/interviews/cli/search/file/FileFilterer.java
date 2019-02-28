@@ -7,14 +7,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FileFilterer {
-    private List<File> filesLoaded;
 
-    public FileFilterer(String directoryName) {
-        initialize(directoryName);
-    }
-
-    private void initialize(String directoryName) {
+    /**
+     * Filters .txt and .md files on a given directory
+     *
+     * @param directoryName Directory name
+     * @return a List of text files (.txt|.md) in directory
+     */
+    public static List<String> getTextFileNames(String directoryName) {
         File directory = new File(directoryName);
+
+        List<File> filesLoaded = null;
 
         // TODO: Add a better way to filter several extensions.
         File[] filesInDirectory = directory
@@ -23,11 +26,11 @@ public class FileFilterer {
         if (filesInDirectory != null) {
             filesLoaded = Arrays.stream(filesInDirectory).collect(Collectors.toList());
         }
-    }
 
-    public List<String> getTextFileNames() {
         if (filesLoaded == null)
             return Collections.emptyList();
-        return filesLoaded.stream().map(File::getPath).collect(Collectors.toList());
+        else {
+            return filesLoaded.stream().map(File::getPath).collect(Collectors.toList());
+        }
     }
 }

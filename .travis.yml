@@ -1,0 +1,11 @@
+language: java
+jdk:
+  - oraclejdk8
+
+branches:
+  # blocklist
+  except:
+    - /^feature.*$/
+  # safelist
+  only:
+    - master

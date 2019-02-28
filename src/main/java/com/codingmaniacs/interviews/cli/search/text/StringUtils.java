@@ -8,6 +8,12 @@ public class StringUtils {
     private static final String CHARS_TO_BE_IGNORED = "[.,?!]";
     private static final String WORD_SEPARATOR = " ";
 
+    /**
+     * Tokenizes the words contained on a text line, removing unwanted characters.
+     *
+     * @param textLine Line of text to be sanitized
+     * @return Stream containing the words as tokens
+     */
     public static Stream<String> sanitizeAndTokenizeWords(String textLine) {
         if (textLine == null || textLine.trim().isEmpty()) {
             return Stream.empty();

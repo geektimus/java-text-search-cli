@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertEquals;
 
-public class WordRankerTest {
+public class WordIndexTest {
 
     final Map<String, List<String>> indexedWords = Stream.of(
             new AbstractMap.SimpleEntry<>(
@@ -51,22 +51,22 @@ public class WordRankerTest {
 
     @Test
     public void testRankNonIndexedWordZero() {
-        WordRanker wordRanker = WordRanker.getInstance();
-        wordRanker.initialize(indexedWords);
+        WordIndex wordIndex = WordIndex.getInstance();
+        wordIndex.initialize(indexedWords);
 
-        List<RankedWord> rank = wordRanker.getRankForWords(Collections.singletonList("word10"));
+        List<RankedWord> rank = wordIndex.getRankForWords(Collections.singletonList("word10"));
 
         assertEquals("The rank for a word not present in a file is 0 for that specific file", 0, rank.size());
     }
 
     @Test
     public void testRankIndexedWordOnlyOneHitInOneFile() {
-        WordRanker wordRanker = WordRanker.getInstance();
-        wordRanker.initialize(indexedWords);
+        WordIndex wordIndex = WordIndex.getInstance();
+        wordIndex.initialize(indexedWords);
 
         String filePath = "fake-file-04.txt";
 
-        List<RankedWord> rankPerFile = wordRanker.getRankForWords(Collections.singletonList("word5"));
+        List<RankedWord> rankPerFile = wordIndex.getRankForWords(Collections.singletonList("word5"));
 
         assertThat(rankPerFile, hasSize(1));
 
@@ -75,12 +75,12 @@ public class WordRankerTest {
 
     @Test
     public void testRankIndexedWordOnlyMultipleHitsInSeveralFiles() {
-        WordRanker wordRanker = WordRanker.getInstance();
-        wordRanker.initialize(indexedWords);
+        WordIndex wordIndex = WordIndex.getInstance();
+        wordIndex.initialize(indexedWords);
 
         String word = "word1";
 
-        List<RankedWord> rankPerFile = wordRanker.getRankForWords(Collections.singletonList(word));
+        List<RankedWord> rankPerFile = wordIndex.getRankForWords(Collections.singletonList(word));
 
         assertThat(rankPerFile, hasSize(4));
 
@@ -93,12 +93,12 @@ public class WordRankerTest {
 
     @Test
     public void testRankIndexedMultipleWordsOneHitInOneFile() {
-        WordRanker wordRanker = WordRanker.getInstance();
-        wordRanker.initialize(indexedWords);
+        WordIndex wordIndex = WordIndex.getInstance();
+        wordIndex.initialize(indexedWords);
 
         List<String> words = Arrays.asList("word10", "word5", "word20");
 
-        List<RankedWord> rankPerFile = wordRanker.getRankForWords(words);
+        List<RankedWord> rankPerFile = wordIndex.getRankForWords(words);
 
         assertThat(rankPerFile, hasSize(1));
 
@@ -108,8 +108,8 @@ public class WordRankerTest {
 
     @Test
     public void testRankIndexedMultipleWordsSeveralHitsInSeveralFiles() {
-        WordRanker wordRanker = WordRanker.getInstance();
-        wordRanker.initialize(indexedWords);
+        WordIndex wordIndex = WordIndex.getInstance();
+        wordIndex.initialize(indexedWords);
 
         RankedWord[] expectedRanking = {
                 new RankedWord("word2", "fake-file-04.txt", 100, 1),
@@ -120,7 +120,7 @@ public class WordRankerTest {
 
         List<String> words = Arrays.asList("word2", "word4", "word1");
 
-        List<RankedWord> rankPerFile = wordRanker.getRankForWords(words);
+        List<RankedWord> rankPerFile = wordIndex.getRankForWords(words);
 
         assertThat(rankPerFile, hasSize(4));
         assertThat(rankPerFile, hasItems(expectedRanking));

@@ -28,9 +28,7 @@ public class App {
             return;
         }
 
-        FileFilterer fileFilterer = new FileFilterer(args[0]);
-
-        List<String> textFilesToBeProcessed = fileFilterer.getTextFileNames();
+        List<String> textFilesToBeProcessed = FileFilterer.getTextFileNames(args[0]);
         if (textFilesToBeProcessed.isEmpty()) {
             System.out.println("Warning: The directory provided is empty or doesn't contain text files");
             return;
@@ -46,8 +44,8 @@ public class App {
 
         System.out.println("Loaded " + indexedContent.size() + " words");
 
-        WordRanker wordRanker = WordRanker.getInstance();
-        wordRanker.initialize(indexedContent);
+        WordIndex wordIndex = WordIndex.getInstance();
+        wordIndex.initialize(indexedContent);
 
         Scanner keyboard = new Scanner(System.in);
 
@@ -64,7 +62,7 @@ public class App {
                     .sanitizeAndTokenizeWords(line)
                     .collect(Collectors.toList());
 
-            List<RankedWord> rankForWords = wordRanker.getRankForWords(searchStrings);
+            List<RankedWord> rankForWords = wordIndex.getRankForWords(searchStrings);
             if (rankForWords.isEmpty()) {
                 System.out.println("Info: No matches found for: " + line);
             } else {
