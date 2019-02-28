@@ -150,6 +150,8 @@ gradle-app.setting
 ### Gradle Patch ###
 **/build/
 
+out/
+
 # Intellij
 .idea
 *.iml
