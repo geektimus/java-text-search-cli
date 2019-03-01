@@ -104,6 +104,7 @@ In case you want to run the tests it's as simple as running this command
 - Try to improve the tool using Akka for file parsing and indexing.
 - Add hot reload to allow the user to add new files without having to restart the app.
 - Add stem logic to reduce the number of words to be processed/indexed as we consider words with the same root as the same word, i.e, run, runner, runners, running.
+- Update unit test to test the top 10 functionality.
 
 ## Contributing
 

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 
 public class WordIndexTest {
 
-    final Map<String, List<String>> indexedWords = Stream.of(
+    private final Map<String, List<String>> indexedWords = Stream.of(
             new AbstractMap.SimpleEntry<>(
                     "word1",
                     Arrays.asList(

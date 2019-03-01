@@ -83,6 +83,6 @@ public class WordIndex {
             );
         }
 
-        return ranksPerFile.stream().sorted().collect(Collectors.toList());
+        return ranksPerFile.stream().sorted().limit(10).collect(Collectors.toList());
     }
 }
