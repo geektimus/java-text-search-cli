@@ -27,13 +27,13 @@ public class FileIndexerTest {
         Map<String, String> wordsInFile = FileIndexer.getIndexedContents(textFilePath);
 
         assertEquals("The indexer should return the number of words on a file", 63, wordsInFile.size());
-        assertEquals("The file name should be the same used for the test", textFilePath, wordsInFile.get("lorem"));
+        assertEquals("The file name should be the same used for the test", textFilePath.replace("\\", "/"), wordsInFile.get("lorem").replace("\\", "/"));
 
         textFilePath = "src/test/resources/fake-directory/b-text-file.txt";
         wordsInFile = FileIndexer.getIndexedContents(textFilePath);
 
         assertEquals("The indexer should return the number of words on a file", 70, wordsInFile.size());
-        assertEquals("The file name should be the same used for the test", textFilePath, wordsInFile.get("voluptatem"));
+        assertEquals("The file name should be the same used for the test", textFilePath.replace("\\", "/"), wordsInFile.get("voluptatem").replace("\\", "/"));
     }
 
     @Test
@@ -49,17 +49,31 @@ public class FileIndexerTest {
                 "The indexer should return the number of words on a file",
                 117,
                 wordsInFiles.size());
+        List<String> expectedPaths = textFilePaths.stream()
+                .map(path -> path.replace("\\", "/"))
+                .collect(java.util.stream.Collectors.toList());
+        List<String> actualPaths = wordsInFiles.get("dolor").stream()
+                .map(path -> path.replace("\\", "/"))
+                .collect(java.util.stream.Collectors.toList());
         assertEquals(
                 "The word should be present on both files",
-                textFilePaths,
-                wordsInFiles.get("dolor"));
+                expectedPaths,
+                actualPaths);
+        List<String> expectedFirstPath = Collections.singletonList(textFilePaths.get(0).replace("\\", "/"));
+        List<String> actualFirstPath = wordsInFiles.get("voluptate").stream()
+                .map(path -> path.replace("\\", "/"))
+                .collect(java.util.stream.Collectors.toList());
         assertEquals(
                 "The word should be present only on the first file",
-                Collections.singletonList(textFilePaths.get(0)),
-                wordsInFiles.get("voluptate"));
+                expectedFirstPath,
+                actualFirstPath);
+        List<String> expectedSecondPath = Collections.singletonList(textFilePaths.get(1).replace("\\", "/"));
+        List<String> actualSecondPath = wordsInFiles.get("perspiciatis").stream()
+                .map(path -> path.replace("\\", "/"))
+                .collect(java.util.stream.Collectors.toList());
         assertEquals(
                 "The word should be present only on the second file",
-                Collections.singletonList(textFilePaths.get(1)),
-                wordsInFiles.get("perspiciatis"));
+                expectedSecondPath,
+                actualSecondPath);
     }
 }
